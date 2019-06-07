@@ -14,3 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+// PRUEBA
+
+Route::get('/usuario/prueba', 'UserController@prueba');
+
+// RUTAS DEL API
+
+Route::post('/api/register', 'UserController@register');
+Route::post('/api/login', 'UserController@login');
