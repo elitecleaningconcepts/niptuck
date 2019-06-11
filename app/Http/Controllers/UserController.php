@@ -48,7 +48,7 @@ class UserController extends Controller
                 // La validacion pasa correctamente
 
                 // Cifrar contrasena
-                $pwd = password_hash($params->password, PASSWORD_BCRYPT, ['cost'=> 4]);
+                $pwd = hash('sha256', $params->password);
 
                 // Crear usuario 
                 $user = new User();
@@ -90,8 +90,58 @@ class UserController extends Controller
         return response()->json($data,$data['code']);
     }
 
-    public function login(Request $request)
-    {
-        return "Accion del login";
+    public function login(Request $request){
+
+        $jwtAuth = new \JwtAuth();
+
+        // Recibir datos por post
+        $json = $request->input('json', null);
+        $params = json_decode($json);
+        $params_array = json_decode($json, true); 
+
+        // Validar los datos
+        $validate = \Validator::make($params_array,[
+            'email'      => 'required | email',
+            'password'  => 'required',
+        ]);
+
+        if($validate->fails()){
+
+            // La validacion ha fallado
+            $singup = array(
+                'status' => 'error',
+                'code' => 404,
+                'message' => 'El usuario no se ha podido loguear',
+                'errors' => $validate->errors(),
+            );
+
+        }else{
+
+            // Cifrar la contrasena
+            $pwd = hash('sha256', $params->password);
+
+            // Devolver token o datos
+            $singup = $jwtAuth->singup($params->email,$pwd);
+
+            if(!empty($getToken)){
+                $singup = $jwtAuth->singup($params->email, $pwd, true);
+            }
+
+        }
+        
+        return response()->json($singup, 200);
+    }
+
+    public function update(Request $request){
+        $token = $request->header('Authorization');
+        $jwtAuth = new \JwtAuth();
+        $checkToken = $jwtAuth->checkToken($token);
+
+        if($checkToken){
+            echo "<h1>Login correcto</h1>";
+        }else{
+            echo "<h1><Login incorrecto</h1>";
+        }
+        die();
     }
 }
