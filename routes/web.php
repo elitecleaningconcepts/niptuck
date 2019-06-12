@@ -23,4 +23,4 @@ Route::get('/usuario/prueba', 'UserController@prueba');
 
 Route::post('/api/register', 'UserController@register');
 Route::post('/api/login', 'UserController@login');
-Route::post('/api/update', 'UserController@update');
+Route::put('/api/update', 'UserController@update');
