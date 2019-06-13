@@ -187,4 +187,41 @@ class UserController extends Controller
 
     }
 
+    public function upload(Request $request){
+
+        // Recoger los datos de la peticion
+        $image = $request->file('file0');
+
+        // Validacion de la imagen
+        $validate = \Validator::make($request->all(), [
+            'file0' => 'required | image | mimes:jpg,jpeg,png,gif'
+        ]);
+
+        // Guardar la imagen
+        if(!$image || $validate->fails()){
+
+            $data = array(
+                'code' => 400,
+                'status' => 'error',
+                'message' => 'Error al subir la imagen',
+            );
+
+        }else{
+
+            $image_name = time() . $image->getClientOriginalName();
+            \Storage::disk('users')->put($image_name, \File::get($image));
+
+            $data = array(
+                'code' => 200,
+                'status' => 'success',
+                'image' => $image_name,
+            );
+
+        }
+
+        // Devolver el resultado
+        return response()->json($data, $data['code']);
+
+    }
+
 }

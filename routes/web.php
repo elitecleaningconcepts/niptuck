@@ -1,4 +1,5 @@
 <?php
+use App\Http\Middleware\ApiAuthMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,4 @@ Route::get('/usuario/prueba', 'UserController@prueba');
 Route::post('/api/register', 'UserController@register');
 Route::post('/api/login', 'UserController@login');
 Route::put('/api/update', 'UserController@update');
+Route::post('/api/user/upload', 'UserController@upload')->middleware(ApiAuthMiddleware::class);
